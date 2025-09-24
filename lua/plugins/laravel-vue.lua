@@ -5,6 +5,66 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        -- ESLint Language Server untuk auto-format
+        eslint = {
+          settings = {
+            codeAction = {
+              disableRuleComment = {
+                enable = true,
+                location = "separateLine",
+              },
+              showDocumentation = {
+                enable = true,
+              },
+            },
+            codeActionOnSave = {
+              enable = true,
+              mode = "all",
+            },
+            format = true,
+            nodePath = "",
+            onIgnoredFiles = "off",
+            packageManager = "npm",
+            problems = {
+              shortenToSingleLine = false,
+            },
+            quiet = false,
+            run = "onType",
+            useESLintClass = false,
+            validate = "on",
+            workingDirectory = {
+              mode = "location",
+            },
+          },
+          on_attach = function(client, bufnr)
+            -- Enable formatting capability
+            client.server_capabilities.documentFormattingProvider = true
+
+            -- Auto-format on save untuk file Vue, JS, TS
+            if
+              vim.bo[bufnr].filetype == "vue"
+              or vim.bo[bufnr].filetype == "javascript"
+              or vim.bo[bufnr].filetype == "typescript"
+            then
+              vim.api.nvim_create_autocmd("BufWritePre", {
+                buffer = bufnr,
+                callback = function()
+                  -- ESLint fix all kemudian format
+                  vim.cmd("silent! EslintFixAll")
+                  vim.lsp.buf.format({
+                    bufnr = bufnr,
+                    async = false,
+                    timeout_ms = 3000,
+                    filter = function(c)
+                      return c.name == "eslint"
+                    end,
+                  })
+                end,
+              })
+            end
+          end,
+        },
+
         -- Vue Language Server (Volar)
         volar = {
           init_options = {
@@ -22,6 +82,10 @@ return {
               },
             },
           },
+          on_attach = function(client, bufnr)
+            -- Disable Volar formatting untuk menghindari konflik dengan ESLint
+            client.server_capabilities.documentFormattingProvider = false
+          end,
         },
 
         -- TypeScript Language Server
@@ -76,6 +140,10 @@ return {
               },
             },
           },
+          on_attach = function(client, bufnr)
+            -- Disable TSServer formatting untuk menghindari konflik dengan ESLint
+            client.server_capabilities.documentFormattingProvider = false
+          end,
         },
 
         -- PHP/Laravel Language Server
@@ -101,6 +169,27 @@ return {
             },
           },
         },
+      },
+    },
+  },
+
+  -- Conform.nvim untuk formatting yang lebih baik
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        vue = { "eslint_d" },
+        javascript = { "eslint_d" },
+        typescript = { "eslint_d" },
+        json = { "prettier" },
+        css = { "prettier" },
+        scss = { "prettier" },
+        html = { "prettier" },
+      },
+      format_on_save = {
+        timeout_ms = 3000,
+        lsp_fallback = true,
       },
     },
   },
