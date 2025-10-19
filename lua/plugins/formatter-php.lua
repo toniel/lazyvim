@@ -1,16 +1,21 @@
--- lua/plugins/formatter-php.lua
-
+-- lua/plugins/php.lua
 return {
-  -- Konfigurasi ini akan menimpa (override) pengaturan default dari conform.nvim
+  -- Configure conform.nvim for PHP formatting with auto-save
   {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        -- Menambahkan php-cs-fixer sebagai formatter untuk filetype 'php'
-        php = { "php-cs-fixer" },
+        php = { "php_cs_fixer" }, -- or { "pint" } for Laravel projects
+      },
+      -- Add auto-format on save
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_fallback = true,
       },
     },
   },
+
+  -- Configure nvim-lint for PHP linting
   {
     "mfussenegger/nvim-lint",
     optional = true,
@@ -20,6 +25,8 @@ return {
       },
     },
   },
+
+  -- Configure none-ls (null-ls) for additional PHP support
   {
     "nvimtools/none-ls.nvim",
     optional = true,
@@ -30,6 +37,29 @@ return {
       table.insert(opts.sources, nls.builtins.diagnostics.phpcs)
     end,
   },
+
+  -- Configure PHP LSP (Intelephense)
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        intelephense = {
+          settings = {
+            intelephense = {
+              format = {
+                enable = true,
+              },
+              environment = {
+                includePaths = { "vendor/" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+
+  -- PHP Debug Adapter
   {
     "mfussenegger/nvim-dap",
     optional = true,

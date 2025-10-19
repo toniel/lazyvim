@@ -230,6 +230,7 @@ return {
     opts = function(_, opts)
       if type(opts.ensure_installed) == "table" then
         vim.list_extend(opts.ensure_installed, {
+          "blade",
           "vue",
           "typescript",
           "javascript",
@@ -248,38 +249,6 @@ return {
     end,
   },
 
-  -- Telescope configuration for better file finding
-  {
-    "nvim-telescope/telescope.nvim",
-    opts = {
-      defaults = {
-        file_ignore_patterns = {
-          "node_modules",
-          "vendor",
-          ".git",
-          "storage/framework",
-          "bootstrap/cache",
-        },
-      },
-      pickers = {
-        find_files = {
-          hidden = false,
-          -- Include Vue files in pages and components
-          find_command = {
-            "rg",
-            "--files",
-            "--hidden",
-            "--glob",
-            "!**/.git/*",
-            "--glob",
-            "!**/node_modules/*",
-            "--glob",
-            "!**/vendor/*",
-          },
-        },
-      },
-    },
-  },
 
   -- File icons for Vue and TypeScript files
   {
