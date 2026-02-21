@@ -135,6 +135,7 @@ return {
   {
     "gbprod/phpactor.nvim",
     ft = "php",
+    cmd = { "PhpactorImportClass", "PhpactorContextMenu", "PhpactorClassNew", "PhpactorImportMissingClasses" },
     build = function()
       require("phpactor.handler.update")()
     end,
@@ -146,15 +147,18 @@ return {
       { "<leader>pm", "<cmd>PhpactorContextMenu<CR>", desc = "PHP: Context menu", mode = "n" },
       { "<leader>pn", "<cmd>PhpactorClassNew<CR>", desc = "PHP: New class", mode = "n" },
       { "<leader>pi", "<cmd>PhpactorImportClass<CR>", desc = "PHP: Import class", mode = "n" },
+      { "<leader>pa", "<cmd>PhpactorImportMissingClasses<CR>", desc = "PHP: Import all missing", mode = "n" },
     },
-    opts = {
-      install = {
-        path = vim.fn.stdpath("data") .. "/phpactor",
-      },
-      lspconfig = {
-        enabled = false, -- Set true jika ingin phpactor sebagai LSP
-        options = {},
-      },
-    },
+    config = function()
+      require("phpactor").setup({
+        install = {
+          bin = vim.fn.stdpath("data") .. "/phpactor/bin/phpactor",
+        },
+        lspconfig = {
+          enabled = false,
+          options = {},
+        },
+      })
+    end,
   },
 }

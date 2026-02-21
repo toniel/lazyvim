@@ -80,3 +80,4 @@ map("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
 map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature Help" })
 -- Disable the winbar/breadcrumbs completely
 vim.opt.winbar = ""
+vim.g.autoformat = true

@@ -1,13 +1,13 @@
--- ~/.config/nvim/lua/plugins/laravel-vue.lua
 return {
   -- TypeScript and Vue Language Server
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- ESLint Language Server untuk auto-format
+        -- ESLint Language Server HANYA untuk LINTING, bukan formatting
         eslint = {
           settings = {
+            format = false, -- PENTING: Matikan format dari ESLint
             codeAction = {
               disableRuleComment = {
                 enable = true,
@@ -21,7 +21,6 @@ return {
               enable = true,
               mode = "all",
             },
-            format = true,
             nodePath = "",
             onIgnoredFiles = "off",
             packageManager = "npm",
@@ -36,33 +35,7 @@ return {
               mode = "location",
             },
           },
-          on_attach = function(client, bufnr)
-            -- Enable formatting capability
-            client.server_capabilities.documentFormattingProvider = true
-
-            -- Auto-format on save untuk file Vue, JS, TS
-            if
-              vim.bo[bufnr].filetype == "vue"
-              or vim.bo[bufnr].filetype == "javascript"
-              or vim.bo[bufnr].filetype == "typescript"
-            then
-              vim.api.nvim_create_autocmd("BufWritePre", {
-                buffer = bufnr,
-                callback = function()
-                  -- ESLint fix all kemudian format
-                  vim.cmd("silent! EslintFixAll")
-                  vim.lsp.buf.format({
-                    bufnr = bufnr,
-                    async = false,
-                    timeout_ms = 3000,
-                    filter = function(c)
-                      return c.name == "eslint"
-                    end,
-                  })
-                end,
-              })
-            end
-          end,
+          -- Hapus on_attach yang memaksa format dengan eslint
         },
 
         -- Vue Language Server (Volar)
@@ -82,10 +55,7 @@ return {
               },
             },
           },
-          on_attach = function(client, bufnr)
-            -- Disable Volar formatting untuk menghindari konflik dengan ESLint
-            client.server_capabilities.documentFormattingProvider = false
-          end,
+          -- Hapus on_attach yang mematikan format, biarkan conform yang mengatur
         },
 
         -- TypeScript Language Server
@@ -140,10 +110,7 @@ return {
               },
             },
           },
-          on_attach = function(client, bufnr)
-            -- Disable TSServer formatting untuk menghindari konflik dengan ESLint
-            client.server_capabilities.documentFormattingProvider = false
-          end,
+          -- Hapus on_attach yang mematikan format
         },
 
         -- PHP/Laravel Language Server
@@ -178,18 +145,15 @@ return {
     "stevearc/conform.nvim",
     optional = true,
     opts = {
+      -- PENTING: Gunakan 'prettier' bukan 'eslint_d'
       formatters_by_ft = {
-        vue = { "eslint_d" },
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
+        vue = { "prettier" },
+        javascript = { "prettier" },
+        typescript = { "prettier" },
         json = { "prettier" },
         css = { "prettier" },
         scss = { "prettier" },
         html = { "prettier" },
-      },
-      format_on_save = {
-        timeout_ms = 3000,
-        lsp_fallback = true,
       },
     },
   },
@@ -248,7 +212,6 @@ return {
       opts.highlight.additional_vim_regex_highlighting = { "vue" }
     end,
   },
-
 
   -- File icons for Vue and TypeScript files
   {

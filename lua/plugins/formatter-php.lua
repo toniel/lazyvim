@@ -7,11 +7,6 @@ return {
       formatters_by_ft = {
         php = { "php_cs_fixer" }, -- or { "pint" } for Laravel projects
       },
-      -- Add auto-format on save
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
     },
   },
 
